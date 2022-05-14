@@ -3,7 +3,7 @@ import AddIcon from '@mui/icons-material/Add';
 
 function CreateArea(props) {
   
-    const [next,setNext]=useState({title :"", content :""});
+    const [next,setNext]=useState({head:props.heading, content :props.content});
 
     function handleChange(event){
         let {name,value}= event.target;
@@ -29,7 +29,7 @@ function CreateArea(props) {
     <div>
       <form className="createAreaForm1">
         <input onChange={handleChange} name="title" placeholder="Title" value={next.head} />
-        <textarea onChange={handleChange} name="content" placeholder="Take a note..." rows="10" value={next.content}/>
+        <textarea onChange={handleChange} name="content" placeholder="Take a note..." rows="12" value={next.content}/>
         {/* <button onClick={ (event)=>{
           event.preventDefault();
           props.onAdd(next);
@@ -38,6 +38,20 @@ function CreateArea(props) {
         }
         }><AddIcon /></button> */}
       </form>
+      <button onClick={ (event)=>{
+          event.preventDefault();
+          //alert("content area= "+ next.title);
+          props.onSave(next);
+          props.close();
+          // next.head="";
+          // next.content="";
+        }}> Save </button>
+      <button onClick={ (event)=>{
+          event.preventDefault();
+          props.onDelete();
+          props.close();
+      }
+      } > Delete </button>
     </div>
   );
 }

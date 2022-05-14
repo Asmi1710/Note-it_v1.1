@@ -50,12 +50,20 @@ import {
 } from 'cdbreact';
 import { NavLink } from 'react-router-dom';
 import logoImg from "./Logo.png";
+import { useSelector } from "react-redux";
+import { selectUser } from "../features/userSlice";
 
 const Sidebar = (props) => {
+
+  const user = useSelector (selectUser);
+  const presentProject= props.projects.filter((project)=>{
+    return(project.userId===user.uid)
+      });
+
   return (
     <div style={{ display: 'flex', height: '100vh', overflow: 'scroll initial' }}>
       <CDBSidebar minWidth="110px" maxWidth="210px" textColor="#fff" backgroundColor="#333">
-        <CDBSidebarHeader prefix={<i className="fa fa-bars fa-large"></i>}>
+        <CDBSidebarHeader  prefix={<i className="fa fa-bars fa-large"></i>}>
             {/* <img
             alt=""
             src= {logoImg}
@@ -71,23 +79,24 @@ const Sidebar = (props) => {
         <CDBSidebarContent className="sidebar-content">
           <CDBSidebarMenu>
           {
-            props.projects.map((data,index)=>{
+            
+            presentProject.map((data,index)=>{
                  var title=data.projectTitle;
                  var id=data.id;
                  if (data.projectTitle.length>15){
                      title = data.projectTitle.substring(0,14)+"..."
                      //alert(title);
                  }
+              
                  return(
-                  <CDBSidebarMenuItem icon="table">
+                  <CDBSidebarMenuItem className="sidebarMenuItems" icon="table">
                   <div key={index}
                          id={index} onClick={()=>{
                              props.linkClicked(id);
                          }}>{title}
                   </div>
                   </CDBSidebarMenuItem>
-                 );
-
+                 );                
             })
           }
            

@@ -3,26 +3,47 @@ import Header1 from "./Header1";
 import Footer from "./Footer";
 import Note1 from "./Note1";
 import Sidebar1 from "./Sidebar1";
-import CreateArea from "./CreateArea";
+//import CreateArea from "./CreateArea";
 import ProjectTitle from "./ProjectTitle";
 import {db} from "../firebaseConfig";
 import { collection, addDoc, setDoc, doc, updateDoc, deleteDoc, onSnapshot, serverTimestamp , query, orderBy } from "firebase/firestore";
-import { useSelector } from "react-redux";
-import { selectUser } from "../features/userSlice";
-import Login from "./Login";
-//import firebase from 'firebase';
+import { useDispatch, useSelector } from "react-redux";
+import { selectUser,logout,login } from "../features/userSlice";
+import Login1 from "./Login1";
+import {auth } from "../firebaseConfig";
+import { BrowserRouter as Router} from "react-router-dom";
+import FlipMove from "react-flip-move";
+
 
 
 
 function App(){
-    
+
+    const user = useSelector (selectUser);
+    const dispatch = useDispatch()
     const [notes,setNotes]=useState ([]);
-    const [project,setProject]=useState({projectTitle:"untitled", isAdded:false, index:null, id:0, timestamp:null, noteList:[{title:"",content:""}]});
+    const [project,setProject]=useState({userId:"", projectTitle:"untitled", isAdded:false, index:null, id:0, timestamp:null, noteList:[{title:"",content:""}]});
     const [projectList,setProjectList]= useState([]);
     const [projectCounter,setProjectCounter]= useState(0);
 
     //using snapshot to read data from the database
     useEffect (()=> {
+
+        auth.onAuthStateChanged(userAuth =>{
+            if (userAuth){
+                // user is logged in 
+                dispatch (login({
+                    email:userAuth.email,
+                    uid: userAuth.uid,
+                    name: userAuth.name,
+                    //picURL: userAuth.picURL
+                })
+                );
+            }else {
+                // user is logged out
+                dispatch (logout())
+            }
+        })
         // db.collection("projectList")
         // .orderBy('timestamp', "desc")
         // .onSnapshot((snapshot)=>{
@@ -51,6 +72,7 @@ function App(){
             return(project.id===idValue)
         });
         setProject({
+            userId:clickedProject[0].userId,
             projectTitle:clickedProject[0].projectTitle, 
             isAdded:clickedProject[0].isAdded, 
             index:clickedProject[0].index, 
@@ -92,7 +114,7 @@ function App(){
 
     function setNewProject (){
         setNotes ([]);
-        setProject({projectTitle:"untitled", isAdded:false, index:null, id:0, timestamp:null, noteList:[]});
+        setProject({userId:"", projectTitle:"untitled", isAdded:false, index:null, id:0, timestamp:null, noteList:[]});
         //alert(projectCounter);
     }
 
@@ -109,6 +131,7 @@ function App(){
             setProjectCounter(indexVal);
             alert ("value="+ indexVal);
             return { 
+                userId:user.uid,
                 projectTitle: newProjectTitle,
                 isAdded:prevProject.isAdded,
                 index:indexVal,
@@ -170,13 +193,18 @@ function App(){
         }    
     }
 //_____________________________________________________________________________
-    // method to handle addition& deletion of notes to the noteList
+    // methods to handle add Blank, edit & delete note to the noteList
+
+    const [editNote, setEditNote] = useState({title :"", content :""});
+    const [edit, setEdit] = useState (false);
+
 
     function handleAdd(next){
         setNotes(prevNotes=>{
-            return ([...prevNotes,{title:next.head,content:next.content}])
+            return ([{title:next.title,content:next.content}, ...prevNotes])
         });   
     }
+
 
     function handleDelete(id){
         setNotes(notes.filter((note,index)=>{
@@ -184,38 +212,68 @@ function App(){
         }));
     }   
 
-    function handleEdit (){
-        
+    function handleBlankNoteAdd (){
+        setNotes(prevNotes=>{
+            return ([{title:"Title",content:"content"}, ...prevNotes]);
+        });
     }
-    const user = useSelector (selectUser);
+
+    function handleEdit(editedNote, id){
+        setEditNote ({title:editedNote.head, content:editedNote.content});
+        setEdit (true);
+        handleDelete (id);
+    }
+
+    useEffect (()=>{
+        if (edit){
+            setEdit (false);
+            handleAdd (editNote);
+        }
+    },[notes]);
 
     return (
+        <Router>
         <div id="container-fluid">
 
-            { !user ? (<Login />):
+            { !user ? (<Login1 resetProj={setNewProject}/>):
             (
+                
                 <div className="wrapper row gx-0">
                 {/* <div className=""> */}
                     <div className="col col-md-1 col-sm-1 sidebar-wrapper">
-                    <Sidebar1 projects={projectList} addProject={handleAddProject} linkClicked={handleBackToOldProject} deleteProject={handleProjectDeletion}/>
+                    <Sidebar1 projects={projectList} linkClicked={handleBackToOldProject} />
                     </div>
                     <div className="col-lg-11 col-md-11 col-sm-11 page-content-wrapper noteSection">
-                        <Header1 />
-                        <ProjectTitle title={project.projectTitle} onSave={handleSave} key={projectCounter} id={projectList.length+1}  />
+                        <Header1 addProject={handleAddProject} logout={logout} />   
+                        <ProjectTitle title={project.projectTitle} onSave={handleSave} key={projectCounter} id={projectList.length+1} projID={project.id} onBlankAdd={handleBlankNoteAdd} deleteProject={handleProjectDeletion}/>
                         <div className="scroll">
-                            <CreateArea onAdd={handleAdd}/>
+                            {/* <CreateArea onAdd={handleAdd}/> */}
                             <div>
-                            {notes.map((note,index)=>
-                                <Note1 
-                                key={index}
-                                id={index}
-                                delete={handleDelete}
-                                title={note.title} 
-                                note={note.content} />
+                            {/* <FlipMove> */}
+                                    {notes.map((note,index)=>{
+                                        var shortTitle = note.title;
+                                        if(note.title!==null)
+                                        if (note.title.length>15){
+                                            shortTitle = note.title.substring(0,14)+"...";
+                                        }
+                                        return (
+                                            <Note1 
+                                        key={index}
+                                        id={index}
+                                        delete={handleDelete}
+                                        title={note.title} 
+                                        note={note.content}
+                                        short={shortTitle}
+                                        onSave={handleEdit} />
+                                        )
+                                    }
+                                    
                                 )}
+                            {/* </FlipMove> */}
+                            
                             </div>
-                            <Footer />
-                        </div>        
+                        </div>    
+                        {/* <Footer />     */}
                 {/* <Note title="Heading" note="Type the note" /> */}
                         
                     </div>
@@ -226,6 +284,7 @@ function App(){
             }
             
         </div>
+        </Router>
     );
 }
 
@@ -240,8 +299,7 @@ export default App;
 // 3. deployement
 
 // 4. handle Footer
-// 5. handle scrolling of Sidebar
 // 6. Highlight the current project name in the sidebar
-// 8. work on drag and set position of sticky notes
-// 9. make project list to toggle and increase the workspace
+// 
+//
 // 7. ask friends to test it 
