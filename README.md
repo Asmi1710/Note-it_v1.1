@@ -1,3 +1,68 @@
+## Note-It:
+
+A React application that enables you to create your notes and organize them under separate titles which appear in the sidebar. This will help you to organise your thoughts, your to-do lists, daily appointments, random ideas, etc in an effective manner. This is version 1.0 and very basic with many more features to be added in the future. 
+
+## Deployed on Firebase
+
+link-> https://note-it-6e0dd.web.app/
+
+## Screenshot
+
+Login Page-> 
+![Screen Shot 2022-05-18 at 8 19 21 AM](https://user-images.githubusercontent.com/96052563/168948520-589fce26-bc94-482e-9364-0828824511cd.png)
+
+
+Forgot password page ->
+![Screen Shot 2022-05-18 at 8 19 29 AM](https://user-images.githubusercontent.com/96052563/168948550-f8caeb73-9016-4976-a152-55d8c39f78ee.png)
+
+Home Page ->
+![Screen Shot 2022-05-18 at 8 20 35 AM](https://user-images.githubusercontent.com/96052563/168948577-1b618abf-6595-45ea-99cd-e5f206ddb11c.png)
+
+
+![Screen Shot 2022-05-18 at 8 20 49 AM](https://user-images.githubusercontent.com/96052563/168948594-13d9f2a5-3454-4c88-9dbe-8cc1db54f201.png)
+
+
+![Screen Shot 2022-05-18 at 8 21 11 AM](https://user-images.githubusercontent.com/96052563/168948605-9bb19673-019b-483d-8e11-6ed0e418d754.png)
+
+
+## Different features of the website
+
+* On loading, it displays the login page with following options:-
+   * Register with name, email and password
+   * Login with registered email address and password
+   * Send link to registered email address when user forgets password.
+* Once the user logins, it opens the home page.
+* On the home page, it displays the initials of user's name and logout button next to it. 
+* User can give title to the project, add notes and edit any of them. Then there is dropdown button next to project's name to save the projects or any changes in the saved project and also to delete the current project.
+* On saving the project for the first time, it's name gets added to the list on the sidebar and all the notes get saved.
+* If user makes any changes to the saved note, then he/she needs to again press "save" button to save those changes.
+* User can create a new Project by pressing "Add Project" button on the navigation bar. This creates a new blank project to begin our work. 
+* User can go to the old saved projects by clicking on their names in the sidebar.
+
+## Things I have learned through this project
+
+Through this project, following concepts I learned:
+* Creating a basic React application with dependencies like React, React-DOM, react-bootstrap, mui, etc
+* Breaking the website into various re-usable components and creating them as jsx files
+* Using redux to render user info to different components of the project
+* Database management, authentication and deployment of projects on firebase
+* Basic concepts like 
+   * Inline styling for React elements
+   * Import, Export and modules
+   * React Props
+   * Mapping and loops
+   * Filter, Reduce and Find
+   * Arrow functions
+   * Hooks like useState and useEffect
+
+
+## Features that will be soon added
+
+Many features will be added to this project in the coming days-> 
+* work on drag and set position of sticky notes
+* making it responsive for mobiles and tablets
+
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
